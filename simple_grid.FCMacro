@@ -63,25 +63,37 @@ def a_clear_console():
 
 a_clear_console()
 
+# Retrieve Draft preferences ====================================
+draft_prefs = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Draft")
+
 # Variables ====================================
-spacing_x = 10
-spacing_y = 10
-major_line_every_x = 30  # Major line interval for X
-major_line_every_y = 30  # Major line interval for Y
+spacing_x = draft_prefs.GetFloat("gridSpacing", 10)  # Default 10 if not set
+spacing_y = spacing_x  # Grid spacing is uniform
+major_line_every_x = draft_prefs.GetInt("gridSize", 5)  # Default 5 if not set
+major_line_every_y = major_line_every_x
 
 # Ensure size_x and size_y are evenly divisible by major_line intervals, rounding up
 size_x = ceil(1000 / (major_line_every_x * spacing_x)) * (major_line_every_x * spacing_x)
 size_y = ceil(1000 / (major_line_every_y * spacing_y)) * (major_line_every_y * spacing_y)
 
+# Colors ====================================
+line_color = draft_prefs.GetString("gridLineColor", "0.5,0.5,0.5").split(",")
+x_axis_color = draft_prefs.GetString("gridAxisColor", "0.7,0,0").split(",")
+y_axis_color = draft_prefs.GetString("gridAxisColor", "0,0.7,0").split(",")
+x_axis_major_color = draft_prefs.GetString("gridMajorLineColor", "0.8,0.2,0.2").split(",")
+y_axis_major_color = draft_prefs.GetString("gridMajorLineColor", "0.2,0.8,0.2").split(",")
+
+line_color = tuple(map(float, line_color))
+x_axis_color = tuple(map(float, x_axis_color))
+y_axis_color = tuple(map(float, y_axis_color))
+x_axis_major_color = tuple(map(float, x_axis_major_color))
+y_axis_major_color = tuple(map(float, y_axis_major_color))
+
 line_width = 0.5  # Adjusted line width
 axis_width = line_width * 2
 major_line_width = line_width * 1.5  # Width of major lines
-line_color = (0.5, 0.5, 0.5)
-x_axis_color = (0.7, 0.3, 0.3)
-y_axis_color = (0.3, 0.7, 0.3)
-x_axis_major_color = (0.8, 0.2, 0.2)  # Color for X major lines
-y_axis_major_color = (0.2, 0.8, 0.2)  # Color for Y major lines
 text_color_bright_green = (0.0, 1.0, 0.0)  # Bright green for titles
+
 globalAxisCross = False
 groupName = 'Grid'
 
